@@ -80,7 +80,7 @@ pub mod diagnostics {
         }
         let mut out: u8 = 0;
         for i in 0..occurences_of_one.len() {
-            if occurences_of_one[i] >= reaport.len()/2 {
+            if occurences_of_one[i] >= reaport.len() / 2 {
                 out += 1 << i;
             }
         }
@@ -94,6 +94,86 @@ pub mod diagnostics {
     }
 }
 
+pub mod bingo {
+
+    const BOARD_SIZE: usize = 5;
+    struct Board {
+        number_table: Vec<Vec<usize>>,
+        marked_ones: Vec<Vec<bool>>, // this table is for highlighting choosen fields only
+        won_possibilities: Vec<usize>, //this should contain number of shoots in all available rws and cols, len should be 2*size of number table (or 10 because BINGO have 5 letters in itself)
+    }
+
+    trait BingoBoard {
+        // Trait is not needed Here but I'd like to test of Trait implementation
+        fn display(&self);
+        fn mark_number(&mut self, input: usize) -> bool;
+    }
+
+    impl BingoBoard for Board {
+        fn display(&self) {
+            for row in self.number_table.iter() {
+                for n in row.iter() {
+                    if *n < 10 as usize {
+                        print!("{}  ", n);
+                    } else {
+                        print!("{} ", n);
+                    }
+                }
+                print!("\n");
+            }
+        }
+        fn mark_number(&mut self, input: usize) -> bool {
+            for (i, v) in self.number_table.iter().enumerate() {
+                for (j, x) in v.iter().enumerate() {
+                    if *x == input {
+                        self.marked_ones[i][j] = true; // just to highlight what field was choosen
+                        self.won_possibilities[i] += 1;
+                        if self.won_possibilities[i] == BOARD_SIZE {
+                            return true;
+                        }
+                        self.won_possibilities[j + BOARD_SIZE] += 1;
+                        if self.won_possibilities[j + BOARD_SIZE] == BOARD_SIZE {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+    }
+    pub fn test() {
+        // I know, i should implement "::new()" for it
+        let mut board = Board {
+            number_table: vec![
+                vec![1, 2, 1, 2, 1],
+                vec![3, 4, 3, 4, 3],
+                vec![5, 6, 5, 6, 5],
+                vec![7, 8, 7, 8, 7],
+                vec![9, 10, 9, 10, 9],
+            ],
+            marked_ones: vec![
+                vec![false, false, false, false, false],
+                vec![false, false, false, false, false],
+                vec![false, false, false, false, false],
+                vec![false, false, false, false, false],
+                vec![false, false, false, false, false],
+            ],
+            won_possibilities: vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        };
+        board.display();
+        let result = board.mark_number(2);
+        println!("{}", result);
+        let result = board.mark_number(4);
+        println!("{}", result);
+        let result = board.mark_number(6);
+        println!("{}", result);
+        let result = board.mark_number(8);
+        println!("{}", result);
+        let result = board.mark_number(10);
+        println!("{}", result);
+    }
+}
+
 fn main() {
-    diagnostics::test();
+    bingo::test();
 }
