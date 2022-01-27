@@ -1,3 +1,6 @@
+#![feature(int_abs_diff)]
+#![allow(unused)]
+
 pub mod sonar {
     #[derive(Debug)]
     enum DepthDelta {
@@ -174,6 +177,55 @@ pub mod bingo {
     }
 }
 
+
+pub mod hydrothermal {
+    #[derive(Debug)]
+    struct Point {
+        x: usize,
+        y: usize
+    }
+    #[derive(Debug)]
+    struct LineTerminals {
+        a: Point,
+        b: Point
+    }
+    use std::fs::File;
+    use std::io::Read;
+
+    fn import_line_terminals_from_file(filename: &str) -> Vec<LineTerminals> { // one of the most ineffecient parsers i guess.
+        let mut file = File::open(filename).unwrap();
+        let mut content = String::new();
+        file.read_to_string(&mut content).unwrap();
+        // Parse to vector of LineTerminals
+        let mut out: Vec<LineTerminals>  = Vec::new();
+        for line in content.lines() {
+            let numbers: Vec<&str> = line.split(" -> ").collect();
+            let pa_xy: Vec<&str> = numbers[0 as usize].split(",").collect();
+            let pa = Point{x:pa_xy[0 as usize].parse().unwrap(), y:pa_xy[1 as usize].parse().unwrap()};
+            let pb_xy: Vec<&str> = numbers[1 as usize].split(",").collect();
+            let pb = Point{x:pb_xy[0 as usize].parse().unwrap(), y:pb_xy[1 as usize].parse().unwrap()};
+            let line = LineTerminals{a:pa, b:pb};
+            out.push(line);
+        }
+        out
+    }
+
+    use std::collections::HashMap;
+    fn create_danger_map(line_terminals: Vec<LineTerminals>) {
+        let mut danger_map: HashMap<Point, usize> = HashMap::new();
+    }
+
+
+    fn calculate_danger_points(line_terminals: LineTerminals) /*-> Vec<Point>*/ {
+        let dx = line_terminals.a.x.abs_diff(line_terminals.b.x);
+        let dy = line_terminals.a.y.abs_diff(line_terminals.b.y);
+    }
+
+    pub fn test() {
+        println!("huehuehue")
+    }
+}
+
 fn main() {
-    bingo::test();
+    hydrothermal::test();
 }
