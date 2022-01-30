@@ -179,7 +179,7 @@ pub mod bingo {
 
 
 pub mod hydrothermal {
-    #[derive(Debug)]
+    #[derive(Debug, Eq, PartialEq, Hash)]
     struct Point {
         x: usize,
         y: usize
@@ -211,18 +211,59 @@ pub mod hydrothermal {
     }
 
     use std::collections::HashMap;
-    fn create_danger_map(line_terminals: Vec<LineTerminals>) {
+    fn create_danger_map(line_terminals: Vec<LineTerminals>) -> HashMap<Point, usize>{
         let mut danger_map: HashMap<Point, usize> = HashMap::new();
+        for line_t in line_terminals {
+            match calculate_danger_points(line_t) {
+                Ok(danger_points) => {
+                    for point in danger_points {
+                        *danger_map.entry(point).or_insert(1) += 1;
+                    }
+                }
+                Err(msg) => {
+                    println!("WARNING: {}", msg);
+                }
+            }
+        }
+        danger_map
     }
 
-
-    fn calculate_danger_points(line_terminals: LineTerminals) /*-> Vec<Point>*/ {
-        let dx = line_terminals.a.x.abs_diff(line_terminals.b.x);
-        let dy = line_terminals.a.y.abs_diff(line_terminals.b.y);
+    use std::cmp;
+    fn calculate_danger_points(line_terminals: LineTerminals) -> Result<Vec<Point>, &'static str> {
+        // This is not optimal solution, I tried with abs, but it would be better just ot make if statement
+        // for which number is less, the iterate over it fo the value of second like : for i in line_terminals.a.x..line_terminals.b.x {}
+        let mut danger_points: Vec<Point> = Vec::new();
+        if line_terminals.a.x == line_terminals.b.x {
+            let common_x = line_terminals.a.x;
+            let dy = line_terminals.a.y.abs_diff(line_terminals.b.y);
+            let begin = std::cmp::min(line_terminals.a.y, line_terminals.b.y);
+            for i in 0..dy+1 {
+                let point = Point{x: common_x, y: begin+i};
+                danger_points.push(point);
+            }
+            Ok(danger_points)
+        }
+        else if line_terminals.a.y == line_terminals.b.y {
+            let common_y = line_terminals.a.y;
+            let dx = line_terminals.a.x.abs_diff(line_terminals.b.x);
+            let begin = std::cmp::min(line_terminals.a.x, line_terminals.b.x);
+            for i in 0..dx+1 {
+                let point = Point{x: begin+i, y: common_y};
+                danger_points.push(point);
+            }
+            Ok(danger_points)
+        }
+        else{
+            Err("Line arent vertical or horizontal")
+        }
     }
 
     pub fn test() {
-        println!("huehuehue")
+        let line_terminals = import_line_terminals_from_file("line_terminals.txt");
+        let danger_map = create_danger_map(line_terminals);
+        println!("{:?}", danger_map);
+
+
     }
 }
 
