@@ -294,6 +294,51 @@ pub mod latarenfish {
 
 }
 
+pub mod crabs {
+    type CrabSwarm = Vec<usize>;
+
+    fn align_to_position(swarm: &CrabSwarm, destination_pos: usize) -> usize{
+        let mut total_fuel: usize = 0;
+        for pos in swarm.iter() {
+            let fuel = destination_pos.abs_diff(*pos);
+            //println!("Move from {}, to {}: {}, fuel.", pos, destination_pos, fuel);
+            total_fuel += fuel
+        }
+        total_fuel
+    }
+
+    fn determine_most_economic_position(swarm: &CrabSwarm) -> (usize, usize) {
+        // Why do simple arithmetic averange dowe not works here????
+        // Brute force... meh :/
+        let min = swarm.iter().min().unwrap();
+        let max = swarm.iter().max().unwrap();
+        let mut costs: Vec<usize> = Vec::new();
+        for i in *min..*max {
+            costs.push(align_to_position(swarm, i));
+        }
+
+        let mut min_i = 0;
+        let mut min_v = costs[0];
+        for (i, v) in costs.iter().enumerate() {
+            if *v < min_v {
+                min_v = *v;
+                min_i = i;
+            }
+        }
+        (min_i, min_v)
+    }
+
+    pub fn test() {
+        let swarm: CrabSwarm = vec![16,1,2,0,4,2,7,1,2,14];
+        for i in 0..16 {
+            let total_fuel = align_to_position(&swarm, i);
+            println!("For position: {}, total fuel: {}",i, total_fuel);
+        }
+        let (i, v) = determine_most_economic_position(&swarm);
+        println!("Optimal opsition is: {}, and costs: {}", i, v);
+    }
+}
+
 fn main() {
-    latarenfish::test();
+    crabs::test();
 }
