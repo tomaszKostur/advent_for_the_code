@@ -267,6 +267,33 @@ pub mod hydrothermal {
     }
 }
 
+pub mod latarenfish {
+    type Shoal = Vec<usize>;
+
+    fn turn_day(shoal: &mut Shoal) {
+        let mut new_generation : Vec<usize> = Vec::new();
+        for mut fish in &mut shoal.iter_mut() {
+            if *fish == 0 as usize {
+                *fish = 6 as usize;
+                new_generation.push(8);
+            }
+            else {
+                *fish -= 1;
+            }
+        }
+        shoal.append(&mut new_generation);
+    }
+
+    pub fn test() {
+        let mut shoal: Shoal = vec![1, 2, 3];
+        for i in 1..40 {
+            turn_day(&mut shoal);
+            println!("{:?}", &shoal);
+        }
+    }
+
+}
+
 fn main() {
-    hydrothermal::test();
+    latarenfish::test();
 }
