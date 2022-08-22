@@ -339,6 +339,70 @@ pub mod crabs {
     }
 }
 
+pub mod smoke_basin {
+    type HeightMap = Vec<Vec<usize>>;
+
+    fn find_lovest_points(map: &HeightMap) -> (usize, usize) {
+        for (y, vy) in map.iter().enumerate() {
+            for (x, vx) in map.iter().enumerate() {
+
+            }
+        }
+
+        (0, 0)
+    }
+
+    fn is_point_lowest(map: &HeightMap, x: usize, y: usize) -> bool{
+        let val = get_value(map, x as i8, y as i8).expect("trying to check over possible ranges");
+        let (a, w, d, s) = get_neighbours(map, x, y);
+        let wa = vec![a, w, d, s];
+        // let compare = |val, nb| -> bool{
+        //     if val > nb {
+        //         false
+        //     }
+        //     else {
+        //         true
+        //     }
+
+        // };
+        for nb_opt in wa.iter() {
+            match nb_opt {
+                Some(nb) => { if val > nb {return false;}}
+                None => {continue}
+            }
+        }
+        true
+    }
+
+    fn get_value(map: &HeightMap, x: i8, y: i8) -> Option<&usize> {
+        if x < 0 || y < 0 {
+            return None;
+        }
+        let almost_v = map.get(y as usize);
+        match almost_v {
+            Some(v) => { v.get(x as usize) }
+            None => {None}
+        }
+    }
+
+    fn get_neighbours( map: &HeightMap, x: usize, y: usize) -> (Option<&usize>, Option<&usize>, Option<&usize>, Option<&usize>) {
+
+        let w = get_value(map, x as i8, y as i8 -1);
+        let s = get_value(map, x as i8, y as i8 +1);
+        let a = get_value(map, x as i8 -1, y as i8);
+        let d = get_value(map, x as i8 +1, y as i8);
+
+        (a, w, d, s)
+    }
+
+    pub fn test() {
+        let td: HeightMap = vec![vec![1,2,3],vec![4,5,6],vec![7,8,9]];
+        let v = is_point_lowest(&td, 1, 0);
+        println!("{:?}", v);
+
+    }
+}
+
 fn main() {
     crabs::test();
 }
